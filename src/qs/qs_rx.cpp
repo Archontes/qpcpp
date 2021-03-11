@@ -368,14 +368,15 @@ void QS::queryCurrObj(std::uint8_t obj_kind) noexcept {
 
 //****************************************************************************
 void QS::rxParse(void) {
-    QSCtr head = rxPriv_.head;
-    while (head != rxPriv_.tail) { // QS-RX buffer NOT empty?
-        std::uint8_t b = rxPriv_.buf[rxPriv_.tail];
+    QSCtr tail = rxPriv_.tail;
+    while (rxPriv_.head != tail) { // QS-RX buffer NOT empty?
+        std::uint8_t b = rxPriv_.buf[tail];
 
-        ++rxPriv_.tail;
-        if (rxPriv_.tail == rxPriv_.end) {
-            rxPriv_.tail = 0U;
+        ++tail;
+        if (tail == rxPriv_.end) {
+            tail = 0U;
         }
+        rxPriv_.tail = tail; // update the tail to a *valid* index
 
         if (l_rx.esc != 0U) {  // escaped byte arrived?
             l_rx.esc = 0U;
